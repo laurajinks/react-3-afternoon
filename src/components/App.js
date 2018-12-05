@@ -5,7 +5,8 @@ import './App.css';
 import Header from './Header/Header';
 import Compose from './Compose/Compose';
 import axios from 'axios';
-import Post from './Post/Post'
+import Post from './Post/Post';
+
 
 const baseURL = 'https://practiceapi.devmountain.com/api';
 
@@ -20,6 +21,7 @@ class App extends Component {
     this.updatePost = this.updatePost.bind( this );
     this.deletePost = this.deletePost.bind( this );
     this.createPost = this.createPost.bind( this );
+    this.filterPosts = this.filterPosts.bind( this );
   }
   
   componentDidMount() {
@@ -51,17 +53,33 @@ class App extends Component {
     }
     axios.post(`${baseURL}/posts`, newPost)
     .then(response => {
-      console.log(response);
       this.setState({ posts: response.data });
     })
   }
+
+  filterPosts (str) {
+    let newArr = [];
+    axios.get(`${baseURL}/posts`)
+    .then(response => { 
+      response.data.filter((element, index) => {
+      if (element.text.includes(str)) {
+        newArr.push(element);
+      }
+      return newArr;
+    })
+    this.setState({posts: newArr});
+    }
+    )
+}
 
   render() {
     const { posts } = this.state;
 
     return (
       <div className="App__parent">
-        <Header />
+
+        <Header 
+        filterPostsFn={ this.filterPosts }/>
 
         <section className="App__content">
 
